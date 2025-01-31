@@ -53,6 +53,7 @@
     "@medusajs/client-types": "0.2.12",
     "@medusajs/ui-preset": "^2.4.0",
     "@playwright/test": "^1.50.0",
+    "@tailwindcss/postcss": "^4.0.1",
     "@types/lodash": "^4.17.15",
     "@types/node": "^22.12.0",
     "@types/pg": "^8.11.11",
