@@ -1,9 +1,9 @@
-import { createHookHandler } from "@medusajs/framework/workflows-sdk";
+import { createWorkflow } from "@medusajs/workflows-sdk";
 
-export const productCreatedHandler = createHookHandler(
-  "productCreated",
-  async (input, container) => {
+export const productCreatedWorkflow = createWorkflow({
+  name: "productCreated", // Use 'name' instead of 'id'
+  handler: async (input, container) => {
     console.log(`Product Created: ${input.productId}`);
-    // You can add additional logic here (e.g., notifications, analytics, etc.)
-  }
-);
+    // Add additional logic if necessary
+  },
+});

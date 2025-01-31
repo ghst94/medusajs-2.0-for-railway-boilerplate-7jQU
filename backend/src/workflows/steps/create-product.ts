@@ -1,7 +1,7 @@
-import { ProductService } from "@medusajs/services";
+import ProductModuleService from "@medusajs/product";
 
 export const createProductStep = async (input, container) => {
-  const productService = container.resolve(ProductService);
+  const productService = container.resolve(ProductModuleService);
 
   const product = await productService.create({
     title: input.title,
@@ -11,4 +11,3 @@ export const createProductStep = async (input, container) => {
 
   return product;
 };
-
