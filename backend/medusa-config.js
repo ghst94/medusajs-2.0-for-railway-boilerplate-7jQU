@@ -1,10 +1,12 @@
-import { loadEnv, Modules, defineConfig } from '@medusajs/utils';
+"use strict";
+
+const { loadEnv, Modules, defineConfig } = require("@medusajs/utils");
 
 // Load environment variables
 loadEnv(process.env.NODE_ENV, process.cwd());
 
 // Import constants
-import {
+const {
   ADMIN_CORS,
   AUTH_CORS,
   BACKEND_URL,
@@ -28,8 +30,8 @@ import {
   MINIO_REGION,
   MINIO_PORT,
   MEILISEARCH_HOST,
-  MEILISEARCH_API_KEY
-} from 'lib/constants';
+  MEILISEARCH_API_KEY,
+} = require("lib/constants");
 
 // ✅ Medusa Project Configuration
 const medusaConfig = {
@@ -51,67 +53,65 @@ const medusaConfig = {
     disable: SHOULD_DISABLE_ADMIN,
   },
   modules: [
-    // ✅ File Storage (MinIO)
+    // ✅ File Storage (S3)
     ...(MINIO_ENDPOINT && MINIO_ACCESS_KEY && MINIO_SECRET_KEY
       ? [
           {
             key: Modules.FILE,
-            resolve: '@medusajs/file',
+            resolve: require.resolve("@medusajs/file"),
             options: {
               providers: [
                 {
-                  resolve: '@medusajs/file-minio',
-                  id: 'minio',
+                  resolve: require.resolve("@medusajs/file-s3"),
+                  id: "s3",
                   options: {
                     endPoint: MINIO_ENDPOINT,
                     accessKey: MINIO_ACCESS_KEY,
                     secretKey: MINIO_SECRET_KEY,
-                    bucket: MINIO_BUCKET || 'medusa-media',
-                    region: MINIO_REGION || 'us-east-1',
+                    bucket: MINIO_BUCKET || "medusa-media",
+                    region: MINIO_REGION || "us-east-1",
                     port: MINIO_PORT || 443,
                     s3_force_path_style: true,
-                    signature_version: 'v4',
+                    signature_version: "v4",
                   },
                 },
               ],
             },
           },
         ]
-      : []
-    ),
+      : []),
 
     // ✅ Event Bus and Workflow Engine (Redis)
     ...(REDIS_URL
       ? [
           {
             key: Modules.EVENT_BUS,
-            resolve: '@medusajs/event-bus-redis',
+            resolve: require.resolve("@medusajs/event-bus-redis"),
             options: { redisUrl: REDIS_URL },
           },
           {
             key: Modules.WORKFLOW_ENGINE,
-            resolve: '@medusajs/workflow-engine-redis',
+            resolve: require.resolve("@medusajs/workflow-engine-redis"),
             options: { redis: { url: REDIS_URL } },
           },
         ]
-      : []
-    ),
+      : []),
 
-    // ✅ Email Notifications (Resend or SendGrid)
+    // ✅ Email Notifications (SendGrid or Resend)
     ...(SENDGRID_API_KEY || RESEND_API_KEY
       ? [
           {
             key: Modules.NOTIFICATION,
-            resolve: '@medusajs/notification',
+            resolve: require.resolve("@medusajs/notification"),
             options: {
               providers: [
                 ...(SENDGRID_API_KEY
                   ? [
                       {
-                        resolve: '@medusajs/notification-sendgrid',
-                        id: 'sendgrid',
+                        resolve: require.resolve("@medusajs/notification-sendgrid"),
+                        id: "sendgrid",
                         options: {
-                          channels: ['email'],
+                          channels: ["email"],
                           api_key: SENDGRID_API_KEY,
                           from: SENDGRID_FROM_EMAIL,
                         },
@@ -121,10 +121,10 @@ const medusaConfig = {
                 ...(RESEND_API_KEY
                   ? [
                       {
-                        resolve: './src/modules/email-notifications',
-                        id: 'resend',
+                        resolve: "./src/modules/email-notifications",
+                        id: "resend",
                         options: {
-                          channels: ['email'],
+                          channels: ["email"],
                           api_key: RESEND_API_KEY,
                           from: RESEND_FROM_EMAIL,
                         },
@@ -135,20 +135,19 @@ const medusaConfig = {
             },
           },
         ]
-      : []
-    ),
+      : []),
 
     // ✅ Payment Gateway (Stripe)
     ...(STRIPE_API_KEY && STRIPE_WEBHOOK_SECRET
       ? [
           {
             key: Modules.PAYMENT,
-            resolve: '@medusajs/payment',
+            resolve: require.resolve("@medusajs/payment"),
             options: {
               providers: [
                 {
-                  resolve: '@medusajs/payment-stripe',
-                  id: 'stripe',
+                  resolve: require.resolve("@medusajs/payment-stripe"),
+                  id: "stripe",
                   options: {
                     apiKey: STRIPE_API_KEY,
                     webhookSecret: STRIPE_WEBHOOK_SECRET,
@@ -158,14 +157,13 @@ const medusaConfig = {
             },
           },
         ]
-      : []
-    ),
+      : []),
 
     // ✅ Search Engine (MeiliSearch)
     ...(MEILISEARCH_HOST && MEILISEARCH_API_KEY
       ? [
           {
-            resolve: '@rokmohar/medusa-plugin-meilisearch',
+            resolve: require.resolve("@rokmohar/medusa-plugin-meilisearch"),
             options: {
               config: {
                 host: MEILISEARCH_HOST,
@@ -174,20 +172,19 @@ const medusaConfig = {
               settings: {
                 products: {
                   indexSettings: {
-                    searchableAttributes: ['title', 'description', 'variant_sku'],
-                    displayedAttributes: ['id', 'title', 'description', 'variant_sku', 'thumbnail', 'handle'],
+                    searchableAttributes: ["title", "description", "variant_sku"],
+                    displayedAttributes: ["id", "title", "description", "variant_sku", "thumbnail", "handle"],
                   },
-                  primaryKey: 'id',
+                  primaryKey: "id",
                 },
               },
             },
           },
         ]
-      : []
-    ),
+      : []),
   ],
   plugins: [],
 };
 
 // ✅ Export Configuration
-export default defineConfig(medusaConfig);
+module.exports = defineConfig(medusaConfig);

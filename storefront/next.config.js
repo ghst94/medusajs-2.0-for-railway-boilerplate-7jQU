@@ -1,6 +1,6 @@
-const checkEnvVariables = require("./check-env-variables")
+const checkEnvVariables = require("./check-env-variables");
 
-checkEnvVariables()
+checkEnvVariables();
 
 /**
  * @type {import('next').NextConfig}
@@ -18,37 +18,31 @@ const nextConfig = {
       {
         protocol: "http",
         hostname: "localhost",
-        
       },
-      { // Note: needed to serve images from /public folder
-        protocol: process.env.NEXT_PUBLIC_BASE_URL?.startsWith('https') ? 'https' : 'http',
-        hostname: process.env.NEXT_PUBLIC_BASE_URL?.replace(/^https?:\/\//, ''),
+      {
+        protocol: process.env.NEXT_PUBLIC_BASE_URL?.startsWith("https") ? "https" : "http",
+        hostname: process.env.NEXT_PUBLIC_BASE_URL
+          ? process.env.NEXT_PUBLIC_BASE_URL.replace(/^https?:\/\//, "")
+          : "example.com", // ✅ Default value
       },
-      { // Note: only needed when using local-file for product media
+      {
         protocol: "https",
-        hostname: process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL?.replace('https://', ''),
+        hostname: process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+          ? process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL.replace("https://", "")
+          : "api.example.com", // ✅ Default value
       },
-      { // Note: can be removed after deleting demo products
+      {
         protocol: "https",
         hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com",
       },
-      { // Note: can be removed after deleting demo products
-        protocol: "https",
-        hostname: "medusa-server-testing.s3.amazonaws.com",
-      },
-      { // Note: can be removed after deleting demo products
-        protocol: "https",
-        hostname: "medusa-server-testing.s3.us-east-1.amazonaws.com",
-      },
-      ...(process.env.NEXT_PUBLIC_MINIO_ENDPOINT ? [{ // Note: needed when using MinIO bucket storage for media
-        protocol: "https",
-        hostname: process.env.NEXT_PUBLIC_MINIO_ENDPOINT,
-      }] : []),
+      ...(process.env.NEXT_PUBLIC_MINIO_ENDPOINT
+        ? [{ protocol: "https", hostname: process.env.NEXT_PUBLIC_MINIO_ENDPOINT || "minio.example.com" }]
+        : []),
     ],
   },
   serverRuntimeConfig: {
-    port: process.env.PORT || 3000
-  }
-}
+    port: process.env.PORT || 3000,
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

@@ -6,4 +6,3 @@ export const productCreatedWorkflow = createTransactionWorkflow({
     console.log(`Product Created: ${input.productId}`);
   },
 });
-
